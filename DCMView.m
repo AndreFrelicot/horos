@@ -3204,7 +3204,7 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
 - (void) flagsChanged:(NSEvent *)event
 {
     [self deleteLens];
-    //	if(loupeController) [loupeController close];
+    
     
     if( [self is2DViewer] == YES)
     {
@@ -13830,32 +13830,5 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
     return is12Bit;
 }
 
-#pragma mark -
-#pragma mark Loupe
-//
-//- (void)displayLoupeWithCenter:(NSPoint)center;
-//{
-//	if(!loupeController)
-//		loupeController = [[LoupeController alloc] init];
-//
-//	if(!lensTexture)
-//	{
-//		[self hideLoupe];
-//		return;
-//	}
-//	
-//	if(![[loupeController window] isVisible])
-//		[loupeController showWindow:nil];
-//		
-//	[loupeController setTexture:lensTexture withSize:NSMakeSize(LENSSIZE, LENSSIZE) bytesPerRow:LENSSIZE rotation:self.rotation];
-//	[loupeController setWindowCenter:center];
-//	[loupeController drawLoupeBorder:YES];
-//}
-//
-//- (void)hideLoupe;
-//{
-//	if([[loupeController window] isVisible])
-//		[[loupeController window] orderOut:self];
-//}
 
 @end

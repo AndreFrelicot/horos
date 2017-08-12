@@ -331,7 +331,7 @@ typedef enum {DCMViewTextAlignLeft, DCMViewTextAlignCenter, DCMViewTextAlignRigh
 	GLubyte *loupeMaskTextureBuffer;
 	float studyColorR, studyColorG, studyColorB;
     NSUInteger studyDateIndex;
-//	LoupeController *loupeController;
+
     
     GLString *studyDateBox;
     
