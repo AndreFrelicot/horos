@@ -313,14 +313,15 @@ typedef enum {DCMViewTextAlignLeft, DCMViewTextAlignCenter, DCMViewTextAlignRigh
 	BOOL			COPYSETTINGSINSERIES;
 	BOOL			is2DViewerCached, is2DViewerValue;
 	
-	char*	lensTexture;
-	int LENSSIZE;
-	float LENSRATIO;
-	BOOL cursorhidden;
-	int avoidRecursiveSync;
-	BOOL avoidMouseMovedRecursive;
-	BOOL avoidChangeWLWWRecursive;
-	BOOL TextureComputed32bitPipeline;
+	char*   lensTexture;
+	float   LENSSIZE;
+	float   LENSRATIO;
+    float   lensZoomFactor;
+	BOOL    cursorhidden;
+	int     avoidRecursiveSync;
+	BOOL    avoidMouseMovedRecursive;
+	BOOL    avoidChangeWLWWRecursive;
+	BOOL    TextureComputed32bitPipeline;
     
 //    BOOL iChatRunning;
 	

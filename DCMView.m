@@ -676,6 +676,8 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
     IndependentCRWLWW = [[NSUserDefaults standardUserDefaults] boolForKey:@"IndependentCRWLWW"];
     CLUTBARS = [[NSUserDefaults standardUserDefaults] integerForKey: @"CLUTBARS"];
     
+    
+    
     //	int previousANNOTATIONS = ANNOTATIONS;
     //	ANNOTATIONS = [[NSUserDefaults standardUserDefaults] integerForKey: @"ANNOTATIONS"];
     //
@@ -2729,6 +2731,35 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
     {
         short   inc, previmage = curImage;
         
+        
+        if( lensTexture)
+        {
+            //Handle
+            if(c == 45)
+            {
+                NSLog(@"Minus pressed");
+                lensZoomFactor -= 0.2;
+                [self setNeedsDisplay:TRUE];
+                return;
+            }
+            if(c == 43)
+            {
+                NSLog(@"Plus pressed");
+                lensZoomFactor += 0.2;
+                [self setNeedsDisplay:TRUE];
+                return;
+            }
+        }
+        
+        
+//        NSLog(@"Key pressed: %@", c);
+//
+//        
+//        if(c == '+')
+//        {
+//            NSLog(@"Key pressed: %@", c);
+//        }
+        
         if( flippedData)
         {
             if (c == NSLeftArrowFunctionKey) c = NSRightArrowFunctionKey;
@@ -3253,6 +3284,19 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
     
     BOOL roiHit = NO;
     
+    
+//    if([event keyCode])
+//    {
+//        auto kcValue = [event keyCode];
+//    }
+//    
+//    //[event keyCode]
+//    
+//    NSLog(@"flagsChanged Keycode %hu", [event keyCode]);
+//    
+    
+    //if([event keyCode])
+    
     if( [self roiTool: currentTool])
     {
         NSPoint tempPt = [self convertPoint: [event locationInWindow] fromView: nil];
@@ -3523,6 +3567,7 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
         
         if( lensTexture && src)
         {
+            
             NSRect l = NSMakeRect( p.x*LENSRATIO - (LENSSIZE/2), p.y*LENSRATIO - (LENSSIZE/2), LENSSIZE, LENSSIZE);
             
             int sx = l.origin.x, sy = l.origin.y;
@@ -3552,7 +3597,10 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
                 for( int y = sy ; y < sy+ey ; y++)
                 {
                     char *sr = &src[ sx*4 +y*dcmWidth*4];
-                    char *dr = &lensTexture[ sxx*4 + (y-sy+syy)*LENSSIZE*4];
+                    
+                    int LENSSIZEInt = (int)LENSSIZE;
+                    
+                    char *dr = &lensTexture[ sxx*4 + (y-sy+syy)*LENSSIZEInt*4];
                     
                     int x = ex;
                     while( x-- > 0)
@@ -3571,7 +3619,8 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
                 for( int y = sy ; y < sy+ey ; y++)
                 {
                     char *sr = &src[ sx +y*dcmWidth];
-                    char *dr = &lensTexture[ sxx*4 + (y-sy+syy)*LENSSIZE*4];
+                    int LENSSIZEInt = (int)LENSSIZE;
+                    char *dr = &lensTexture[ sxx*4 + (y-sy+syy)*LENSSIZEInt*4];
                     
                     int x = ex;
                     while( x-- > 0)
@@ -3594,6 +3643,8 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
                 src.width = LENSSIZE;
                 src.rowBytes = src.width * 4;
                 src.data = lensTexture;
+                
+                
                 
                 dst.height = LENSSIZE * curDCM.pixelRatio;
                 dst.width = LENSSIZE;
@@ -3629,10 +3680,11 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
                     {
                         //						if( (xsqr + y*y) < radsqr)
                         {
-                            lensTexture[ (rad+x)*4 + (rad+y)*LENSSIZE*4] = 0xff;
-                            lensTexture[ (rad-x)*4 + (rad+y)*LENSSIZE*4] = 0xff;
-                            lensTexture[ (rad+x)*4 + (rad-y)*LENSSIZE*4] = 0xff;
-                            lensTexture[ (rad-x)*4 + (rad-y)*LENSSIZE*4] = 0xff;
+                            int LENSSIZEInt = (int)LENSSIZE;
+                            lensTexture[ (rad+x)*4 + (rad+y)*LENSSIZEInt*4] = 0xff;
+                            lensTexture[ (rad-x)*4 + (rad+y)*LENSSIZEInt*4] = 0xff;
+                            lensTexture[ (rad+x)*4 + (rad-y)*LENSSIZEInt*4] = 0xff;
+                            lensTexture[ (rad-x)*4 + (rad-y)*LENSSIZEInt*4] = 0xff;
                         }
                     }
                 }
@@ -9925,17 +9977,22 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
             glMultiTexCoord2f (GL_TEXTURE0, 0, 0); // mask texture : upper left in texture coordinates
             glVertex3d (eventLocation.x, eventLocation.y, 0.0);
             
+            
+            
+            
+            
+            
             glMultiTexCoord2f (GL_TEXTURE1, LENSSIZE, 0); // lensTexture : lower left in texture coordinates
             glMultiTexCoord2f (GL_TEXTURE0, loupeMaskTextureWidth, 0); // mask texture : lower left in texture coordinates
-            glVertex3d (eventLocation.x+LENSSIZE*4*scaleValue/LENSRATIO, eventLocation.y, 0.0);
+            glVertex3d (eventLocation.x+LENSSIZE*lensZoomFactor*scaleValue/LENSRATIO, eventLocation.y, 0.0);
             
             glMultiTexCoord2f (GL_TEXTURE1, 0, LENSSIZE); // lensTexture : upper right in texture coordinates
             glMultiTexCoord2f (GL_TEXTURE0, 0, loupeMaskTextureHeight); // mask texture : upper right in texture coordinates
-            glVertex3d (eventLocation.x, eventLocation.y+LENSSIZE*4*scaleValue/LENSRATIO, 0.0);
+            glVertex3d (eventLocation.x, eventLocation.y+LENSSIZE*lensZoomFactor*scaleValue/LENSRATIO, 0.0);
             
             glMultiTexCoord2f (GL_TEXTURE1, LENSSIZE, LENSSIZE); // lensTexture : lower right in texture coordinates
             glMultiTexCoord2f (GL_TEXTURE0, loupeMaskTextureWidth, loupeMaskTextureHeight); // mask texture : lower right in texture coordinates
-            glVertex3d (eventLocation.x+LENSSIZE*4*scaleValue/LENSRATIO, eventLocation.y+LENSSIZE*4*scaleValue/LENSRATIO, 0.0);
+            glVertex3d (eventLocation.x+LENSSIZE*lensZoomFactor*scaleValue/LENSRATIO, eventLocation.y+LENSSIZE*lensZoomFactor*scaleValue/LENSRATIO, 0.0);
             glEnd();
             
             glActiveTexture(GL_TEXTURE1); // deactivate multitexturing
@@ -9962,15 +10019,17 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
                 glTexCoord2f(0, 0);
                 glVertex3d (eventLocation.x, eventLocation.y, 0.0);
                 glTexCoord2f(loupeTextureWidth, 0);
-                glVertex3d (eventLocation.x+LENSSIZE*4*scaleValue/LENSRATIO, eventLocation.y, 0.0);
+                glVertex3d (eventLocation.x+LENSSIZE*lensZoomFactor*scaleValue/LENSRATIO, eventLocation.y, 0.0);
                 glTexCoord2f(0, loupeTextureHeight);
-                glVertex3d (eventLocation.x, eventLocation.y+LENSSIZE*4*scaleValue/LENSRATIO, 0.0);
+                glVertex3d (eventLocation.x, eventLocation.y+LENSSIZE*lensZoomFactor*scaleValue/LENSRATIO, 0.0);
                 glTexCoord2f(loupeTextureWidth, loupeTextureHeight);
-                glVertex3d (eventLocation.x+LENSSIZE*4*scaleValue/LENSRATIO, eventLocation.y+LENSSIZE*4*scaleValue/LENSRATIO, 0.0);
+                glVertex3d (eventLocation.x+LENSSIZE*lensZoomFactor*scaleValue/LENSRATIO, eventLocation.y+LENSSIZE*lensZoomFactor*scaleValue/LENSRATIO, 0.0);
                 glEnd();
                 
                 glDisable(GL_TEXTURE_RECTANGLE_EXT);
             }
+            
+            
             
             glDisable(GL_BLEND);
             
@@ -12588,6 +12647,7 @@ NSInteger studyCompare(ViewerController *v1, ViewerController *v2, void *context
 {
     [AppController initialize];
     
+    lensZoomFactor = 4;
     [DCMView setDefaults];
     
     return [self initWithFrame:frame imageRows:1  imageColumns:1];
